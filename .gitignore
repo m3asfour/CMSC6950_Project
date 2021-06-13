@@ -4,3 +4,5 @@ PyAuto*
 *.swp
 *.jpg
 *.png
+config
+__pycache__
