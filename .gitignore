@@ -1,3 +1,6 @@
 PyAuto*
 *.log
-*.ipynb
+*.ipynb*
+*.swp
+*.jpg
+*.png
