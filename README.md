@@ -7,12 +7,15 @@
 ---
 
 ## 1. Build PyAutoLens from source
-### 1.1 Clone the PyAutoLens with supporting repos
+### 1.1 Clone the PyAutoLens repo and its supporting modules
 ```
+mkdir packages
+cd packages
 git clone https://github.com/rhayes777/PyAutoFit
 git clone https://github.com/Jammy2211/PyAutoArray
 git clone https://github.com/Jammy2211/PyAutoGalaxy
 git clone https://github.com/Jammy2211/PyAutoLens
+cd ..
 ```
 ### 1.2 Create Python environment 
 ```
@@ -21,17 +24,17 @@ conda activate pyautolens
 ```
 ### 1.3 Install dependencies
 ```
-pip install -r PyAutoFit/requirements_source.txt
-pip install -r PyAutoArray/requirements_source.txt
-pip install -r PyAutoGalaxy/requirements_source.txt
-pip install -r PyAutoLens/requirements_source.txt
+pip install -r packages/PyAutoFit/requirements.txt
+pip install -r packages/PyAutoArray/requirements.txt
+pip install -r packages/PyAutoGalaxy/requirements.txt
+pip install -r packages/PyAutoLens/requirements.txt
 pip install autoconf
 ```
 ### 1.4 Add repos to the environment path
 ```
-conda-develop PyAutoFit
-conda-develop PyAutoArray
-conda-develop PyAutoGalaxy
-conda-develop PyAutoLens
+conda-develop packages/PyAutoFit
+conda-develop packages/PyAutoArray
+conda-develop packages/PyAutoGalaxy
+conda-develop packages/PyAutoLens
 ```
 
