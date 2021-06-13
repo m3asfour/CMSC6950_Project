@@ -1,9 +1,18 @@
 import os
 import sys
+import shutil
+from types import TracebackType
 
 import autolens as al
 import matplotlib.pyplot as plt
 
+
+class InputError(Exception):
+    pass
+
+flags = {
+    'force': False,
+}
 
 generation_parameters = {
     'image-size': 256,
@@ -76,34 +85,54 @@ parameters_types = {
 
 def parse_args(args):
     for arg in args:
-        key, val = arg.split('=')
-        try:
-            if '--' == key[:2]:
-                key = key[2:]
-            elif '-' == key[0]:
-                key = args_shortcuts[key[1:]]
-            else:
-                print('Only specified parameters are allowed preceeded by "-" or "--". Please use "python generate_data.py --help" for more information! Exitting...')
-                exit()
+        if not '=' in arg:
+            try:
+                flags[arg[2:]] = not flags[arg[2:]]
+            except KeyError as error:
+                return KeyError((f'Flag not recognized "{arg[2:]}"!'))
+        else:
+            key, val = arg.split('=')
+            try:
+                if '--' == key[:2]:
+                    key = key[2:]
+                elif '-' == key[0]:
+                    key = args_shortcuts[key[1:]]
+                else:
+                    return InputError('Only parameters preceeded by "-" or "--" are allowed. Please use "python generate_data.py --help" for more info!')
 
-            val_type = parameters_types[key]
-            val_cast = val_type(val) if val_type != tuple else val_type([float(v) for v in val.split(',')])
-            generation_parameters[key[2:]] = val_cast
-        except KeyError:
-            print(f'Passed parameter isn\'t recognized: {key}! Exitting...')
-            exit()
-        except ValueError as error:
-            print(f'Invalid value passed for the parameter {key}')
-            print(f'{error}! Exitting...')
-            exit()
+                val_type = parameters_types[key]
+                val_cast = val_type(val) if val_type != tuple else val_type([float(v) for v in val.split(',')])
+                generation_parameters[key] = val_cast
+            except KeyError:
+                return KeyError(f'Passed parameter not recognized: "{key}"!')
+
+            except ValueError as error:
+                return ValueError(f'Invalid value passed for the parameter "{key}"\n{error}!')
 
 
 passed_args = sys.argv[1:]
 if passed_args:
-    parse_args(passed_args)
+    error = parse_args(passed_args)
+    if error:
+        sys.tracebacklimit = 0
+        print('\n')
+        raise error
+
+
+if 'dataset' in os.listdir():
+    if len(os.listdir('dataset/')) == 0 or flags['force']:
+        shutil.rmtree('dataset/')
+        os.makedirs('dataset')
+    else:
+        sys.tracebacklimit = 0
+        print('\n')
+        raise Warning('Dataset already exists. Please use "--force" to overwrite it! Exitting...')
+else:
+    os.makedirs('dataset')
 
 
 grid = al.Grid2D.uniform(shape_native=(256, 256), pixel_scales=0.05)
+
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -143,6 +172,5 @@ fig, ax = plt.subplots(1, 1)
 ax.imshow(tracer_img, cmap='magma')
 ax.axis('off')
 
-
-if 'dataset' in os.listdir():
-    fig.savefig('./dataset/test.jpg', bbox_inches='tight', pad_inches=0)
+print('done')
+fig.savefig('./dataset/test.jpg', bbox_inches='tight', pad_inches=0)
