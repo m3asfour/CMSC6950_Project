@@ -7,31 +7,22 @@ import generation_parameters as params
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from tqdm import tqdm
+
 
 
 class InputError(Exception):
     pass
 
 
-def print_labels():
-    exit()
-
-def print_help():
-    print(f'\n{"Argument":<25} {"Shortcut":<10} {"Type":<15} {"Description":<65} {"Default Value":<15}')
-    print(f'{"":-<25} {"":-<10} {"":-<15} {"":-<65} {"":-<15}')
-    for shortcut, (arg_type, arg_desc, arg_default) in params.help_descriptions.items():
-        print(f'{f"--{params.args_shortcuts[shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {arg_default:<15}')
-    print('\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --image-size=128"\n')
-    exit()
-
 def parse_args(args):
     for arg in args:
         if not '=' in arg:
             try:
                 if arg[2:] == 'labels':
-                    print_labels()
+                    params.print_labels()
                 elif arg[2:] == 'help':
-                    print_help()
+                    params.print_help()
 
                 params.flags[arg[2:]] = not params.flags[arg[2:]]
             except KeyError as error:
@@ -71,7 +62,7 @@ def main():
 
     check_dataset_dir()
 
-    grid = al.Grid2D.uniform(shape_native=(256, 256), pixel_scales=0.05)
+    grid = al.Grid2D.uniform(shape_native=(params.gen_params['image-size'], params.gen_params['image-size']), pixel_scales=0.05)
     info_df = pd.DataFrame(data=[], columns=['img_path', 'subset', *params.generate_sample().keys()])
     generate_images(grid, info_df)
 
@@ -90,7 +81,9 @@ def check_dataset_dir():
 
 
 def generate_images(grid, info_df):
-    for i in range(params.gen_params['images_number']):
+    fig, ax = plt.subplots(1, 1)
+
+    for i in tqdm(range(params.gen_params['images-number']), desc='Generating images to ./dataset'):
         sample = params.generate_sample()
 
         lens_galaxy = al.Galaxy(
@@ -127,12 +120,11 @@ def generate_images(grid, info_df):
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
         tracer_img = tracer.image_2d_from_grid(grid).native
 
-        fig, ax = plt.subplots(1, 1)
-        ax.imshow(tracer_img, cmap='magma')
+        ax.imshow(tracer_img, cmap=params.gen_params['cmap'])
         ax.axis('off')
 
-        print('done')
-        fig.savefig('./dataset/test.jpg', bbox_inches='tight', pad_inches=0)
+        fig.savefig(f'./dataset/img{i+1}.jpg', bbox_inches='tight', pad_inches=0)
+    plt.close(fig)
 
 
 if __name__ == '__main__':
