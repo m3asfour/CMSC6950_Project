@@ -81,7 +81,8 @@ def check_dataset_dir():
 
 
 def generate_images(grid, info_df):
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=(params.gen_params['image-size'], params.gen_params['image-size']), dpi=1)
+    ax.set_position([0, 0, 1, 1])
 
     for i in tqdm(range(params.gen_params['images-number']), desc='Generating images to ./dataset'):
         sample = params.generate_sample()
@@ -119,11 +120,11 @@ def generate_images(grid, info_df):
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
         tracer_img = tracer.image_2d_from_grid(grid).native
-
+        
         ax.imshow(tracer_img, cmap=params.gen_params['cmap'])
         ax.axis('off')
-
-        fig.savefig(f'./dataset/img{i+1}.jpg', bbox_inches='tight', pad_inches=0)
+        
+        fig.savefig(f'./dataset/img{i+1}.jpg')
     plt.close(fig)
 
 
