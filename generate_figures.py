@@ -6,11 +6,7 @@ import params_and_cli as params
 import numpy as np
 
 
-images_num = 6
-cmap = 'magma'
-
 params.parse_wrapper(sys.argv[1:], 'figures')
-exit()
 
 if len(sys.argv) == 2:
     if sys.argv[1] == '--help':
@@ -50,5 +46,5 @@ for iter_idx, result_file in enumerate(rnd_results):
     ax.imshow(tracer_img, cmap=params.gen_params['cmap'])
     ax.axis('off')
     
-    fig.savefig(f'./dataset/img{i+1}.jpg')
+    fig.savefig(f'./dataset/img.jpg')
     plt.close(fig)

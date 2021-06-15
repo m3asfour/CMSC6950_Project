@@ -10,6 +10,7 @@ params = {
     'figures': {
             'figure-format': 'jpg',
             'cmap': 'magma',
+            'subplots-number': 6,
     },
 
     'data': {
@@ -32,8 +33,9 @@ params = {
             'src-serisic-range': (1, 4),
     },
 
-    'training': {
+    'model': {
             'valid-split': 0.2,
+            'test-split': 0.1,
             'labels': ('lens-redshift'),
     }
 }
@@ -42,6 +44,7 @@ shortcuts = {
     'figures': {
             'f': 'figure-format',
             'c': 'cmap',
+            'sn': 'subplots-number'
     },
 
     'data': {
@@ -64,8 +67,9 @@ shortcuts = {
             'sser': 'src-serisic-range',
     },
 
-    'training': {
+    'model': {
             'v': 'valid-split',
+            't': 'test-split',
             'l': 'labels',
     },    
 }
@@ -73,6 +77,7 @@ shortcuts = {
 params_types = {
     'figure-format': str,
     'cmap': str,
+    'subplots-number': int,
 
     'grid-size': int,
     'generated-number': int,
@@ -93,6 +98,7 @@ params_types = {
     'src-serisic-range': tuple,
     
     'valid-split': float,
+    'test-split': float,
     'labels': tuple,
 }
 
@@ -100,7 +106,8 @@ params_types = {
 help_descriptions = {
     'f': ('str', 'format/extension of the generated images', str(params['figures']['figure-format'])),
     'c': ('str', 'name of the colormap to use in the images', str(params['figures']['cmap'])),
-    
+    'sn': ('int', 'number of subplots to use in the generated figures', str(params['figures']['subplots-number'])),
+
     's': ('int', 'size of the generated images (square images)', str(params['data']['grid-size'])),
     'n': ('int', 'number of images to generate', str(params['data']['generated-number'])),
 
@@ -119,8 +126,9 @@ help_descriptions = {
     'seff': ('float', 'range of sampling of the radius of effect of source galaxy', str(params['data']['src-effect-range'])),
     'sser': ('float,float', 'range of sampling for Serisic index of the source galaxy', str(params['data']['src-serisic-range'])),
 
-    'v': ('float', 'the ratio of images used for validation of the CNN', str(params['training']['valid-split'])),
-    'l': ('str,...,str', 'the labels to train the neural network with', str(params['training']['labels'])),
+    'v': ('float', 'the ratio of images used for validation of the CNN', str(params['model']['valid-split'])),
+    't': ('float', 'the ratio of images used for testing of the CNN', str(params['model']['test-split'])),
+    'l': ('str,...,str', 'the labels to train the neural network with', str(params['model']['labels'])),
 }
 
 
