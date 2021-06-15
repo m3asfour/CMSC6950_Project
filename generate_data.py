@@ -30,7 +30,7 @@ def check_dataset_dir():
 
 
 def generate_data_files(grid):
-    print('\n\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n')
+    params.print_script_description('data')
     for i in tqdm(range(params.params['data']['generated-number']), desc='Generating .pickle files to ./dataset'):
         sample = params.generate_sample()
 

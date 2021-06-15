@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 
 flags = {
@@ -166,16 +167,40 @@ def print_labels():
     exit()
 
 
-# print('\n\nThis script is used to generate gravitational lens images in ./dataset directory.\nYou can control the generation process using the following optional arguments')
 
+cli_hints = {
+    'headers': {
+        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory.\nYou can control the generation process using the following optional arguments'
+    },
+
+    'footers': {
+        'data': '\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --src-intensity-range=0.3,1.2 -f=png"\n',
+    },
+
+    'defaults': {
+        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n'
+    }
+}
+
+
+def print_script_description(script):
+    w = os.get_terminal_size()[0]
+    for line in cli_hints['defaults'][script].split('\n'):
+        print(f'{line:^{w}}')
 
 def print_help(script='data'):
+    w = os.get_terminal_size()[0]
+    for line in cli_hints['headers'][script].split('\n'):
+        print(f'{line:^{w}}')
+
     print(f'\n{"Argument":<25} {"Shortcut":<10} {"Type":<15} {"Description":<65} {"Default Value":<15}')
     print(f'{"":-<25} {"":-<10} {"":-<15} {"":-<65} {"":-<15}')
     for shortcut in shortcuts[script]:
         arg_type, arg_desc, arg_default = help_descriptions[shortcut]
         print(f'{f"--{shortcuts[script][shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {arg_default:<15}')
-    print('\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --src-intensity-range=0.3,1.2 -f=png"\n')
+    
+    for line in cli_hints['footers'][script].split('\n'):
+        print(f'{line:^{w}}')
     exit()
 
 
