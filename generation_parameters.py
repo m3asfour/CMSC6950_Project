@@ -6,7 +6,7 @@ flags = {
 
 gen_params = {
     'image-size': 256,
-    'images-number': 800,
+    'images-number': 100,
     'cmap': 'gray',
     'image-format': 'jpg',
     'valid-split': 0.2,
@@ -135,11 +135,11 @@ def print_labels():
     exit()
 
 
-def print_help():
+def print_help(help_args=help_descriptions.items()):
     print('\n\nThis script is used to generate gravitational lens images in ./dataset directory.\nYou can control the generation process using the following optional arguments')
     print(f'\n{"Argument":<25} {"Shortcut":<10} {"Type":<15} {"Description":<65} {"Default Value":<15}')
     print(f'{"":-<25} {"":-<10} {"":-<15} {"":-<65} {"":-<15}')
-    for shortcut, (arg_type, arg_desc, arg_default) in help_descriptions.items():
+    for shortcut, (arg_type, arg_desc, arg_default) in help_args:
         print(f'{f"--{args_shortcuts[shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {arg_default:<15}')
     print('\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --src-intensity-range=0.3,1.2 -f=png"\n')
     exit()

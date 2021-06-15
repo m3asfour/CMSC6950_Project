@@ -1,14 +1,10 @@
 import os
 import sys
 import shutil
-
+import pickle
 import autolens as al
 import generation_parameters as params
-import pandas as pd
-import matplotlib.pyplot as plt
-
 from tqdm import tqdm
-
 
 
 class InputError(Exception):
@@ -63,8 +59,7 @@ def main():
     check_dataset_dir()
 
     grid = al.Grid2D.uniform(shape_native=(params.gen_params['image-size'], params.gen_params['image-size']), pixel_scales=0.05)
-    info_df = pd.DataFrame(data=[], columns=['img_path', 'subset', *params.generate_sample().keys()])
-    generate_images(grid, info_df)
+    generate_images(grid)
 
 
 def check_dataset_dir():
@@ -80,11 +75,9 @@ def check_dataset_dir():
         os.makedirs('dataset')
 
 
-def generate_images(grid, info_df):
-    fig, ax = plt.subplots(1, 1, figsize=(params.gen_params['image-size'], params.gen_params['image-size']), dpi=1)
-    ax.set_position([0, 0, 1, 1])
-
-    for i in tqdm(range(params.gen_params['images-number']), desc='Generating images to ./dataset'):
+def generate_images(grid):
+    print('\n\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n')
+    for i in tqdm(range(params.gen_params['images-number']), desc='Generating .pickle files to ./dataset'):
         sample = params.generate_sample()
 
         lens_galaxy = al.Galaxy(
@@ -119,14 +112,9 @@ def generate_images(grid, info_df):
         )
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
-        tracer_img = tracer.image_2d_from_grid(grid).native
-        
-        ax.imshow(tracer_img, cmap=params.gen_params['cmap'])
-        ax.axis('off')
-        
-        fig.savefig(f'./dataset/img{i+1}.jpg')
-    plt.close(fig)
-
+        tracer_result = tracer.image_2d_from_grid(grid)
+        with open(f'./dataset/tracer_result{i+1}.pickle', 'wb') as f:
+            pickle.dump(tracer_result, f, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
     main() 
