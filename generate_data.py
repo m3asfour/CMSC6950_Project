@@ -3,63 +3,17 @@ import sys
 import shutil
 import pickle
 import autolens as al
-import generation_parameters as params
+import params_and_cli as params
 from tqdm import tqdm
 
 
-class InputError(Exception):
-    pass
-
-
-def parse_args(args):
-    for arg in args:
-        if not '=' in arg:
-            try:
-                if arg[2:] == 'labels':
-                    params.print_labels()
-                elif arg[2:] == 'help':
-                    params.print_help()
-
-                params.flags[arg[2:]] = not params.flags[arg[2:]]
-            except KeyError as error:
-                return KeyError((f'Flag not recognized "{arg[2:]}"!'))
-        else:
-            key, val = arg.split('=')
-            try:
-                if '--' == key[:2]:
-                    key = key[2:]
-                elif '-' == key[0]:
-                    key = params.args_shortcuts[key[1:]]
-                else:
-                    return InputError('Only parameters preceeded by "-" or "--" are allowed. Please use "python generate_data.py --help" for more info!')
-
-                val_type = params.parameters_types[key]
-                if key != 'labels':
-                    val_cast = val_type(val) if val_type != tuple else val_type([float(v) for v in val.split(',')])
-                else:
-                    val_cast = val_type([v for v in val.split(',')])
-                params.gen_params[key] = val_cast
-
-            except KeyError:
-                return KeyError(f'Passed parameter not recognized: "{key}"!')
-
-            except ValueError as error:
-                return ValueError(f'Invalid value passed for the parameter "{key}"\n{error}!')
-
 
 def main():
-    passed_args = sys.argv[1:]
-    if passed_args:
-        error = parse_args(passed_args)
-        if error:
-            sys.tracebacklimit = 0
-            print('\n')
-            raise error
-
+    params.parse_wrapper(sys.argv[1:], 'data')
     check_dataset_dir()
 
-    grid = al.Grid2D.uniform(shape_native=(params.gen_params['image-size'], params.gen_params['image-size']), pixel_scales=0.05)
-    generate_images(grid)
+    grid = al.Grid2D.uniform(shape_native=(params.params['data']['grid-size'], params.params['data']['grid-size']), pixel_scales=0.05)
+    generate_data_files(grid)
 
 
 def check_dataset_dir():
@@ -75,9 +29,9 @@ def check_dataset_dir():
         os.makedirs('dataset')
 
 
-def generate_images(grid):
+def generate_data_files(grid):
     print('\n\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n')
-    for i in tqdm(range(params.gen_params['images-number']), desc='Generating .pickle files to ./dataset'):
+    for i in tqdm(range(params.params['data']['generated-number']), desc='Generating .pickle files to ./dataset'):
         sample = params.generate_sample()
 
         lens_galaxy = al.Galaxy(

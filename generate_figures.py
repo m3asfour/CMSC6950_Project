@@ -2,12 +2,15 @@ import os
 import pickle
 import sys
 import matplotlib.pyplot as plt
-import pandas as pd
+import params_and_cli as params
 import numpy as np
 
 
 images_num = 6
 cmap = 'magma'
+
+params.parse_wrapper(sys.argv[1:], 'figures')
+exit()
 
 if len(sys.argv) == 2:
     if sys.argv[1] == '--help':
@@ -48,4 +51,4 @@ for iter_idx, result_file in enumerate(rnd_results):
     ax.axis('off')
     
     fig.savefig(f'./dataset/img{i+1}.jpg')
-        plt.close(fig)
+    plt.close(fig)
