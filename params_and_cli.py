@@ -178,7 +178,9 @@ cli_hints = {
     },
 
     'defaults': {
-        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n'
+        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n',
+        'figures': '\n\nThis script is used to generate figures in ./figures directory\nyou can use "python generate_figures.py --help" to view all the optional arguments to control the figures generation.\n'
+
     }
 }
 

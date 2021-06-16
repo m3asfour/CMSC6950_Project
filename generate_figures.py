@@ -1,40 +1,36 @@
 import os
+import shutil
 import pickle
 import sys
 import matplotlib.pyplot as plt
 import params_and_cli as params
 import numpy as np
+from tqdm import tqdm
 
 
 params.parse_wrapper(sys.argv[1:], 'figures')
 
-if len(sys.argv) == 2:
-    if sys.argv[1] == '--help':
-        print('\nuse "-n=" to specify the number of subplots in figures. For example "python generate_figures -n=6"')
-    elif '-n=' in sys.argv[1]:
-        try:
-            images_num = int(sys.argv[1].split('=')[-1])
-        except ValueError as error:
-            print('\nPassed value couldn\'t be converted to integer')
-            print(error)
-            exit()
-    else:
-        print('argument not recognized. Please try "python generate figures --help"')
-else:
-    print('this script requires one parameter exactly. Please try "python generate figures --help" for more information.')
 
 if 'dataset' in os.listdir():
-    all_results = os.listdir('dataset')
-    all_results.remove('gen_df.csv')
-    rnd_results = [all_results[rnd_idx] for rnd_idx in np.random.randint(0, len(all_results), images_num)]
+    all_results = [file for file in os.listdir('dataset') if '.pickle' in file]
+    params.params['figures']['subplots-number'] = min(params.params['figures']['subplots-number'], len(all_results))
+    rnd_indexes = np.random.randint(0, len(all_results), params.params['figures']['subplots-number'])
 else:
-    print('./dataset directory not found. please run generate_data.py first.')
+    print('\n./dataset directory not found. please run generate_data.py first.')
     exit()
 
 
-for iter_idx, result_file in enumerate(rnd_results):
+if 'figures' in os.listdir():
+    os.system('rm -rf ./figures/*')
+else:
+    os.makedirs('./figures')
+
+
+params.print_script_description('figures')
+for iter_idx, rnd_idx in tqdm(enumerate(rnd_indexes), desc='Generating figures in ./figures'):
+    result_file = all_results[rnd_idx]
     with open(f'dataset/{result_file}', 'rb') as f:
-        tracer_result = pickle.loads(f)
+        tracer_result = pickle.load(f)
 
     tracer_img = tracer_result.native
 
@@ -43,8 +39,8 @@ for iter_idx, result_file in enumerate(rnd_results):
         ax.set_position([0, 0, 1, 1])
 
     
-    ax.imshow(tracer_img, cmap=params.gen_params['cmap'])
+    ax.imshow(tracer_img, cmap=params.params['figures']['cmap'])
     ax.axis('off')
     
-    fig.savefig(f'./dataset/img.jpg')
-    plt.close(fig)
+    fig.savefig(f'./figures/img{iter_idx+1}.jpg')
+plt.close(fig)

@@ -1,6 +1,5 @@
 import os
 import sys
-import shutil
 import pickle
 import autolens as al
 import params_and_cli as params
@@ -18,9 +17,8 @@ def main():
 
 def check_dataset_dir():
     if 'dataset' in os.listdir():
-        if len(os.listdir('dataset/')) == 0 or params.flags['force']:
-            shutil.rmtree('dataset/')
-            os.makedirs('dataset')
+        if params.flags['force']:
+            os.system('rm -rf ./dataset/*')
         else:
             sys.tracebacklimit = 0
             print('\n')
@@ -68,7 +66,7 @@ def generate_data_files(grid):
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
         tracer_result = tracer.image_2d_from_grid(grid)
         with open(f'./dataset/tracer_result{i+1}.pickle', 'wb') as f:
-            pickle.dump(tracer_result, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(tracer_result, f)
 
 if __name__ == '__main__':
     main() 
