@@ -1,11 +1,13 @@
 import os
-import shutil
 import pickle
 import sys
+import logging
 import matplotlib.pyplot as plt
 import params_and_cli as params
 import numpy as np
 from tqdm import tqdm
+
+logging.disable()
 
 
 params.parse_wrapper(sys.argv[1:], 'figures')
@@ -27,7 +29,7 @@ else:
 
 
 params.print_script_description('figures')
-for iter_idx, rnd_idx in tqdm(enumerate(rnd_indexes), desc='Generating figures in ./figures'):
+for iter_idx, rnd_idx in enumerate(tqdm(rnd_indexes, desc='Generating figures in ./figures')):
     result_file = all_results[rnd_idx]
     with open(f'dataset/{result_file}', 'rb') as f:
         tracer_result = pickle.load(f)
@@ -44,3 +46,4 @@ for iter_idx, rnd_idx in tqdm(enumerate(rnd_indexes), desc='Generating figures i
     
     fig.savefig(f'./figures/img{iter_idx+1}.jpg')
 plt.close(fig)
+os.system('rm *.log')

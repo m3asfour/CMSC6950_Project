@@ -1,3 +1,6 @@
+import logging
+logging.disable()
+
 import os
 import sys
 import pickle
@@ -13,6 +16,7 @@ def main():
 
     grid = al.Grid2D.uniform(shape_native=(params.params['data']['grid-size'], params.params['data']['grid-size']), pixel_scales=0.05)
     generate_data_files(grid)
+    os.system('rm *.log')
 
 
 def check_dataset_dir():
