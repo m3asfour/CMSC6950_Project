@@ -1,6 +1,7 @@
 import sys
+import logging
 
-from tensorflow.python.keras.backend import dropout
+from tensorflow.python.ops.gen_batch_ops import batch
 
 import params_and_cli as params
 import numpy as np
@@ -12,7 +13,7 @@ import tensorflow.keras.optimizers as optimizers
 import tensorflow.keras.activations as activations
 from tensorflow.keras.models import Sequential
 
-
+logging.disable()
 params.parse_wrapper(sys.argv[1:], 'model')
 
 def create_model(input_shape):
@@ -39,8 +40,25 @@ def create_model(input_shape):
     return model
 
 
-def train_model(model, x, y, valid_split):
+def partition_data(x, y):
+    all_indexes = np.array(range(x.shape[0]))
+    test_indexes = np.random.choice(all_indexes, int(x.shape[0]*params.params['model']['test-split']))
+    all_indexes = set(all_indexes).difference(test_indexes)
+    valid_indexes = np.random.choice(all_indexes, int(len(all_indexes)*params.params['model']['valid-split']))
+    train_indexes = set(all_indexes).difference(valid_indexes)
+
+    train_x, train_y = x[train_indexes], y[train_indexes]
+    valid_x, valid_y = x[valid_indexes], y[valid_indexes]
+    test_x, test_y = x[test_indexes], y[test_indexes]
+    
+    return (train_x, train_y), (valid_x, valid_y), (test_x, test_y)
+
+
+def train_model(model, train_x, train_y, valid_x, valid_y, save_log=True):
     epochs = params.params['model']['epochs']
     batch_size = params.params['model']['batch-size']
-    model.train()
-    pass
+    valid_split = params.params[model]
+
+    history = model.train(train_x, train_y, validation_data=(valid_x, valid_y), abatch_size=batch_size, epochs=epochs)
+    return history
+    
