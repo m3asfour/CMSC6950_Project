@@ -8,3 +8,5 @@ config
 __pycache__
 dataset/*
 figures/*
+*.h5
+

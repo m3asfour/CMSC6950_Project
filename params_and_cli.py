@@ -37,9 +37,10 @@ params = {
     'model': {
             'valid-split': 0.2,
             'test-split': 0.1,
-            'labels': (['lens-redshift', 1],),
-            'epochs': 10,
-            'batch-size': 10
+            'labels': ['src-redshift', 'src-center-x', 'src-center-y'],
+            'epochs': 50,
+            'learning-rate': 0.00001,
+            'batch-size': 20
     }
 }
 
