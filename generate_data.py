@@ -9,6 +9,8 @@ import params_and_cli as params
 from tqdm import tqdm
 
 
+path = '/'.join(os.path.realpath(__file__).split('/')[:-1])
+
 
 def main():
     params.parse_wrapper(sys.argv[1:], 'data')
@@ -16,19 +18,19 @@ def main():
 
     grid = al.Grid2D.uniform(shape_native=(params.params['data']['grid-size'], params.params['data']['grid-size']), pixel_scales=0.05)
     generate_data_files(grid)
-    os.system('rm *.log')
+    # os.system(f'rm {path}/*.log')
 
 
 def check_dataset_dir():
-    if 'dataset' in os.listdir():
+    if 'dataset' in os.listdir(path):
         if params.flags['force']:
-            os.system('rm -rf ./dataset/*')
+            os.system(f'rm -rf {path}/dataset/*')
         else:
             sys.tracebacklimit = 0
             print('\n')
             raise Warning('Dataset already exists. Please use "--force" to overwrite it! Exitting...')
     else:
-        os.makedirs('dataset')
+        os.makedirs(path+'/dataset')
 
 
 def generate_data_files(grid):
@@ -69,7 +71,7 @@ def generate_data_files(grid):
 
         tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
         tracer_result = tracer.image_2d_from_grid(grid)
-        with open(f'./dataset/tracer_result{i+1}.pickle', 'wb') as f:
+        with open(f'{path}/dataset/tracer_result{i+1}.pickle', 'wb') as f:
             pickle.dump(tracer_result, f)
 
 if __name__ == '__main__':
