@@ -1,11 +1,14 @@
+import os 
 import logging
-import matplotlib.pyplot as plt
+import warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+logging.disable(logging.CRITICAL)
+warnings.filterwarnings('ignore')
 
+import matplotlib.pyplot as plt
 from numpy.core.defchararray import mod
-logging.disable(logging.CRITICAL)   # disable logging to the terminal by the tensorflow package
 
 import sys
-import os 
 import pickle
 
 import params_and_cli as params
@@ -15,6 +18,7 @@ import pandas as pd
 import tensorflow.keras.layers as layers
 import tensorflow.keras.optimizers as optimizers
 from tensorflow.keras.models import Sequential
+from tensorflow.keras import backend as K
 
 
 # the absolute path of the script to make sure the data is generated in the project folder not current directory
@@ -25,13 +29,13 @@ def create_model(input_shape):
     labels_len = len(params.params['model']['labels'])
 
     model = Sequential(name='Gravitational_Lens_Model')
-    model.add(layers.InputLayer(input_shape))
+    model.add(layers.Input(input_shape))
     
     model.add(layers.Conv2D(filters=32, kernel_size=(6, 6), strides=(1, 1), padding='same', activation='tanh'))
     model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-    model.add(layers.Conv2D(filters=32, kernel_size=(6, 6), strides=(1, 1), padding='same', activation='tanh'))
+    model.add(layers.Conv2D(filters=64, kernel_size=(4, 4), strides=(1, 1), padding='same', activation='tanh'))
     model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-    model.add(layers.Conv2D(filters=32, kernel_size=(6, 6), strides=(1, 1), padding='same', activation='tanh'))
+    model.add(layers.Conv2D(filters=128, kernel_size=(4, 4), strides=(1, 1), padding='same', activation='tanh'))
     model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
     
     model.add(layers.Flatten())
@@ -94,27 +98,64 @@ def generate_loss_figure(model, history):
     ax.set_xticks(train_epochs)
     # ax.set_yticks(np.linspace(*ax.get_ylim(), 10))
     ax.set_xticklabels(ax.get_xticks(), size=14, rotation=45)
-    ax.set_yticklabels(np.round(ax.get_yticks(), 1), size=14)
+    ax.set_yticklabels(np.round(ax.get_yticks(), 1), size=14);
     ax.set_xlabel('Training Epochs', size=14)
     ax.set_ylabel('Loss Value', size=14)
 
     ax.legend(loc='upper right', ncol=2, fancybox=True, fontsize=14)
     ax.set_title('Losses vs Epochs', size=24)
-    
+    plt.tight_layout()
     fig.savefig(f'{path}/figures/loss_epochs.jpg', bbox_inches='tight')
     return ax
 
+
+def generate_activation_figure(model, test_x, layers_num=3):
+    layers_output = [layer.output for layer in model.layers if layer.__class__.__name__ == 'Conv2D'][:3]
+
+    functor = K.function([model.input], layers_output)
+
+    test_idx = np.random.randint(0, test_x.shape[0])
+    test_img = test_x[[test_idx]]
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+    ax.imshow(test_img[0])
+    ax.axis('off')
+    ax.set_title('Input Image to CNN Model', size=24)
+    plt.tight_layout()
+    fig.savefig(f'{path}/figures/conv_input.jpg')
+
+    for out_idx, conv_output in enumerate(functor([test_img])):
+        dim_sqrt = np.sqrt(conv_output.shape[-1])
+        rows_num, cols_num = int(np.ceil(dim_sqrt)), conv_output.shape[-1] // int(dim_sqrt)  # get integer number of rows
+
+        fig, axs = plt.subplots(rows_num, cols_num, figsize=(6, 6))
+
+        for idx, ax in enumerate(axs.ravel()):
+            if idx < conv_output.shape[-1]:
+                activations = conv_output[0, :, :, idx]
+                ax.imshow(activations, cmap='viridis')
+            ax.set_axis_off()
+
+        fig.suptitle(f'Activations of Convolution Layer #{out_idx+1} with {conv_output.shape[-1]} Filters', size=15)
+        plt.tight_layout()
+        fig.savefig(f'{path}/figures/conv_activ{out_idx+1}.jpg')
+
+    plt.close('all')
 
 def main():
     params.parse_wrapper(sys.argv[1:], 'model')
     x, y = load_dataset()
     (train_x, train_y), (valid_x, valid_y), (test_x, test_y) = split_data(x, y)
 
-    model = create_model(input_shape=train_x.shape[1:])
-    history = train_model(model, train_x, train_y, valid_x, valid_y)
+    if params.flags['model']:
+        model = create_model(input_shape=train_x.shape[1:])
+        history = train_model(model, train_x, train_y, valid_x, valid_y)
 
-    model.save(f'{path}/lens_cnn.h5')
-    return generate_loss_figure(model, history)
+        print('\n\nSaving model as .h5 file...')
+        model.save(f'{path}/lens_cnn.h5')
+        print('Generating CNN Figures...')
+        generate_loss_figure(model, history)
+        generate_activation_figure(model, test_x)
 
 if __name__ == '__main__':
     main()

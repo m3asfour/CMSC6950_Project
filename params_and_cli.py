@@ -4,6 +4,7 @@ import numpy as np
 
 flags = {
     'force': False,
+    'model': True,
 }
 
 
@@ -38,7 +39,7 @@ params = {
             'valid-split': 0.2,
             'test-split': 0.1,
             'labels': ['src-redshift', 'src-center-x', 'src-center-y'],
-            'epochs': 50,
+            'epochs': 5,
             'learning-rate': 0.00001,
             'batch-size': 20
     }
