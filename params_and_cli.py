@@ -137,8 +137,10 @@ help_descriptions = {
 
 labels_description = {
     'src-redshift': 'The red shift level of the source galaxy',
-    'src-center': 'The (x,y) position of the source galaxy in the image',
-    'src-ellip': 'The (x component, y component) of the source galaxy shape',
+    'src-center-x': 'The x position of the source galaxy in the image',
+    'src-center-y': 'The y position of the source galaxy in the image',
+    'src-ellip-x': 'The x component of the source galaxy shape',
+    'src-ellip-y': 'The y component of the source galaxy shape',
     'src-intensity': 'The intensity of the source galaxy\'s energy/light',
     'src-effect':  'The radius of effect of the source galaxy\'s energy/light',
     'src-serisic': 'The Serisic index of the source galaxy'

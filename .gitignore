@@ -6,5 +6,5 @@ PyAuto*
 *.png
 config
 __pycache__
-dataset/*.pickle
+dataset/*
 figures/*
