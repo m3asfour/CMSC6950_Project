@@ -1,5 +1,5 @@
 import logging
-logging.disable()
+logging.disable(logging.CRITICAL)
 
 import os
 import sys
@@ -18,7 +18,7 @@ def main():
 
     grid = al.Grid2D.uniform(shape_native=(params.params['data']['grid-size'], params.params['data']['grid-size']), pixel_scales=0.05)
     generate_data_files(grid)
-    # os.system(f'rm {path}/*.log')
+    os.system(f'rm ./report.log ./root.log')
 
 
 def check_dataset_dir():

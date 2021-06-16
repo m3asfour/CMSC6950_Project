@@ -47,4 +47,4 @@ for iter_idx, rnd_idx in enumerate(tqdm(rnd_indexes, desc='Generating figures in
     
     fig.savefig(f'{path}/figures/img{iter_idx+1}.jpg')
 plt.close(fig)
-# os.system(f'rm {path}/*.log')
+os.system(f'rm ./root.log')
