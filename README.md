@@ -72,3 +72,5 @@ make
   ```
   make clean_all
   ```
+
+## The report is now generated in the project's directory with a CNN model as a .h5 file
