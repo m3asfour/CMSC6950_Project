@@ -20,12 +20,12 @@ dataset/param_df.csv:
 
 # remove temporary files
 clean:
-	rm -rf dataset/* *.log *.swp
+	rm -rf dataset/* *.log *.swp $(wildcard __pycache__)
 	rm -rf latex/*.log latex/*.aux latex/*.bbl latex/*.blg latex/*.pdf
 .PHONY: clean
 
 
 # remove temporary files, the report, the model, and the figures
 reset: clean
-	rm -rf *.h5 *.pdf figures dataset $(wildcard __pycache__)
+	rm -rf *.h5 *.pdf figures dataset
 .PHONY: reset

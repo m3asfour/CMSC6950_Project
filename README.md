@@ -12,7 +12,6 @@ This porject uses PyAutoLens to generate synthesized images of the gravitational
 ---
 
 ## 1. Installing with Conda
-### First make sure you are in the project's directory.
 ### 1.1 Create the conda environment with required dependencies
 ```
 conda create -n autolens astropy numba numpy scikit-image scikit-learn scipy
@@ -30,14 +29,15 @@ pip install pandas matplotlib tensorflow keras tqdm
 
 
 ## 2. Build from Makefile
+#### First make sure you are in the project's directory.
 ```
 make
 ```
-* You can also delete all temporary files using
+* You can also delete all temporary files using, but keeps the report, the .h5 model, and the figures
     ```
     make clean
     ```
-* or delete all generated files (temporary, figures, report)
+* or delete all generated files (returns the repo to its original state)
   ```
   make reset
   ```
