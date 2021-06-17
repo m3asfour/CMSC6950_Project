@@ -1,13 +1,24 @@
+"""
+    This script contains parameters of the package and the text to print to the cli
+    This script doesn't have and main routine and won't do anything if run 
+"""
+
+# import modules
 import sys
 import os
 import numpy as np
 
+
+# flags to perform some conditional code blocks in other scripts
 flags = {
     'force': False,
     'model-figures': True,
 }
 
 
+# the cli hyper-parameters that control the data generation, model training, and figures plotting
+# "data" key is for the script "generate_data.py"
+# "model-figures" key is for the script "model_and_figures.py"
 params = {
     'data': {
             'grid-size': 256,
@@ -43,13 +54,11 @@ params = {
     }
 }
 
-shortcuts = {
-    'model-figures': {
-            'f': 'figure-format',
-            'c': 'cmap',
-            'sn': 'subplots-number'
-    },
 
+# the cli shortcuts for hyper-parameters
+# "data" key is for the script "generate_data.py"
+# "model-figures" key is for the script "model_and_figures.py"
+shortcuts = {
     'data': {
             's': 'grid-size',
             'n': 'generated-number',
@@ -74,14 +83,21 @@ shortcuts = {
             'v': 'valid-split',
             't': 'test-split',
             'l': 'labels',
+            'e': 'epochs',
+            'mlr': 'learning-rate',
+            'b': 'batch-size',
+
+            'f': 'figure-format',
+            'c': 'cmap',
+            'sn': 'subplots-number'
     },    
 }
 
-params_types = {
-    'figure-format': str,
-    'cmap': str,
-    'subplots-number': int,
 
+# the types for the passed cli arguments for hyper-parameters
+# "data" key is for the script "generate_data.py"
+# "model-figures" key is for the script "model_and_figures.py"
+params_types = {
     'grid-size': int,
     'generated-number': int,
 
@@ -102,15 +118,21 @@ params_types = {
     
     'valid-split': float,
     'test-split': float,
-    'labels': tuple,
+    'labels': list,
+    'epochs': int,
+    'learning-rate': float,
+    'batch-size': int,
+
+    'figure-format': str,
+    'cmap': str,
+    'subplots-number': int,
 }
 
 
+# the "--help" descriptions of cli arguments for hyper-parameters
+# "data" key is for the script "generate_data.py"
+# "model-figures" key is for the script "model_and_figures.py"
 help_descriptions = {
-    'f': ('str', 'format/extension of the generated images', str(params['model-figures']['figure-format'])),
-    'c': ('str', 'name of the colormap to use in the images', str(params['model-figures']['cmap'])),
-    'sn': ('int', 'number of subplots to use in the generated figures', str(params['model-figures']['subplots-number'])),
-
     's': ('int', 'size of the generated images (square images)', str(params['data']['grid-size'])),
     'n': ('int', 'number of images to generate', str(params['data']['generated-number'])),
 
@@ -132,9 +154,40 @@ help_descriptions = {
     'v': ('float', 'the ratio of images used for validation of the CNN', str(params['model-figures']['valid-split'])),
     't': ('float', 'the ratio of images used for testing of the CNN', str(params['model-figures']['test-split'])),
     'l': ('str,...,str', 'the labels to train the neural network with', str(params['model-figures']['labels'])),
+    'e': ('int', 'the epochs for the CNN model training', str(params['model-figures']['epochs'])),
+    'mlr': ('float', 'the learning rate for the CNN model training', str(params['model-figures']['learning-rate'])),
+    'b': ('int', 'the batch size for the CNN model training', str(params['model-figures']['batch-size'])),
+
+    'f': ('str', 'format/extension of the generated images', str(params['model-figures']['figure-format'])),
+    'c': ('str', 'name of the colormap to use in the images', str(params['model-figures']['cmap'])),
+    'sn': ('int', 'number of subplots to use in the generated figures', str(params['model-figures']['subplots-number'])),
 }
 
 
+# the cli hints for the scripts (before, and after the help table or after running the script)
+# "data" key is for the script "generate_data.py"
+# "model-figures" key is for the script "model_and_figures.py"
+# headers -> printed before the help table, footers -> printed after the help table
+# defaults -> printed after the script is run
+cli_hints = {
+    'headers': {
+        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory.\nYou can control the generation process using the following optional arguments',
+        'model-figures': '\n\nThis script is used to create a CNN model, train it, and generate figures to ./figures.\nYou can control the generation process using the following optional arguments',
+    },
+
+    'footers': {
+        'data': '\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --src-intensity-range=0.3,1.2"\n',
+        'model-figures': '\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python model_and_figures.py -epochs=100 -f=png"\n',
+    },
+
+    'defaults': {
+        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n',
+        'model-figures': '\n\nThis script is used to create a CNN model, train it, and generate figures in ./figures directory\nyou can use "python model_and_figures.py --help" to view all the optional arguments.\n'
+    }
+}
+
+
+# the descriptions of possible labels to use
 labels_description = {
     'src-redshift': 'The red shift level of the source galaxy',
     'src-center-x': 'The x position of the source galaxy in the image',
@@ -147,7 +200,13 @@ labels_description = {
 }
 
 
+
 def generate_sample():
+    """generates a sample/configuration of the gravitational lens problem
+
+    Returns:
+        dict: a dictionary containing the configuration values of the sample
+    """
     sample = {}
 
     sample['lens-redshift'] = params['data']['lens-redshift-range'][0] + np.random.rand() * np.subtract(*np.flip(params['data']['lens-redshift-range']))
@@ -167,92 +226,125 @@ def generate_sample():
 
     return sample
 
+
 def print_labels():
+    """prints the allowed labels description to the cli
+    """
+    print('\n\n')
+    w = os.get_terminal_size()[0]   # get the terminal width to center the text
+    print(f'{"These are the allowed parameters to use":{w}}\n')
+    print(f'\n{"Label":<25} {"Description":<65}')
+    print(f'{"":-<25} {"":-<65}')
+    for label, desc in labels_description.items():
+        print(f'{f"{label}":<25} {desc:<65}')
     exit()
 
 
-
-cli_hints = {
-    'headers': {
-        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory.\nYou can control the generation process using the following optional arguments'
-    },
-
-    'footers': {
-        'data': '\nuse "--argument=value" or "-shortcut=value" to specify the values. For example "python generate_data.py --src-intensity-range=0.3,1.2 -f=png"\n',
-    },
-
-    'defaults': {
-        'data': '\n\nThis script is used to generate gravitational lens files in ./dataset directory\nyou can use "python generate_data.py --help" to view all the optional arguments to control the data generation.\n',
-        'model-figures': '\n\nThis script is used to generate figures in ./figures directory\nyou can use "python generate_figures.py --help" to view all the optional arguments to control the figures generation.\n'
-
-    }
-}
-
-
 def print_script_description(script):
-    w = os.get_terminal_size()[0]
+    """prints the description text of the passed script to to the cli
+
+    Args:
+        script (str): the script name/key
+    """
+
+    w = os.get_terminal_size()[0]   # get the terminal width to center the text
+    # center the multiple lines of the description
     for line in cli_hints['defaults'][script].split('\n'):
         print(f'{line:^{w}}')
 
-def print_help(script='data'):
-    w = os.get_terminal_size()[0]
+
+def print_help(script):
+    """prints the help table of the script to the cli
+
+    Args:
+        script (str): the script name/key.
+    """
+    w = os.get_terminal_size()[0]   # get terminal width to center the header and footer
     for line in cli_hints['headers'][script].split('\n'):
         print(f'{line:^{w}}')
 
+    # print the help table
     print(f'\n{"Argument":<25} {"Shortcut":<10} {"Type":<15} {"Description":<65} {"Default Value":<15}')
     print(f'{"":-<25} {"":-<10} {"":-<15} {"":-<65} {"":-<15}')
     for shortcut in shortcuts[script]:
         arg_type, arg_desc, arg_default = help_descriptions[shortcut]
-        print(f'{f"--{shortcuts[script][shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {arg_default:<15}')
-    
+        if arg_default[0] != '[':   # if default value isn't a list of multiple values
+            print(f'{f"--{shortcuts[script][shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {arg_default:<15}')
+        else:
+            for idx, val in enumerate(arg_default.split(',')):  # loop over values in default value list
+                if idx == 0:    # print the other fields for in the same line as first value
+                    print(f'{f"--{shortcuts[script][shortcut]}":<25} {f"-{shortcut}":<10} {arg_type:<15} {arg_desc:<65} {val:<15}')
+                else:           # print remaining values without the other fields
+                    print(f'{"":<25} {"":<10} {"":<15} {"":<65} {val:<15}')
+
     for line in cli_hints['footers'][script].split('\n'):
         print(f'{line:^{w}}')
     exit()
 
 
-class InputError(Exception):
-    pass
-
-
 def parse_wrapper(passed_args, script):
+    """parse the arguments and catch and thrown errors before displaying them
+
+    Args:
+        passed_args (list): the list of the passed arguments to the cli
+        script (str): the name of the script calling the parse_wrapper function
+
+    Raises:
+        error: error occured while parsing the arguments
+    """
     if passed_args:
         error = parse_args(passed_args, script=script)
         if error:
-            sys.tracebacklimit = 0
+            sys.tracebacklimit = 0  # supress printing traceback before raising error
             print('\n')
             raise error
 
+
 def parse_args(args, script):
+    """parses the arguments passed to the cli
+
+    Args:
+        args (list): list of the passed arguments to the cli
+        script (str): the name of the script calling the parse_args function
+
+    Returns:
+        Error: the error occurred while parsing the arguments
+    """
     for arg in args:
-        if not '=' in arg:
+        if not '=' in arg:  # if not a argument with a value (a flag)
             try:
-                if arg[2:] == 'labels':
+                if arg[2:] == 'labels': # print the allowed labels to use
                     print_labels()
-                elif arg[2:] == 'help':
+                elif arg[2:] == 'help': # print the help table
                     print_help(script)
 
-                flags[arg[2:]] = not flags[arg[2:]]
+                flags[arg[2:]] = not flags[arg[2:]] # toggle the flag value
             except KeyError as error:
                 return KeyError((f'Flag not recognized "{arg[2:]}"!'))
-        else:
-            key, val = arg.split('=')
+        else:   # if an argument with a value
+            key, val = arg.split('=')   # split the argument name from the value
             try:
-                if '--' == key[:2]:
+                if '--' == key[:2]: # remove "--" from argument
                     key = key[2:]
-                elif '-' == key[0]:
+                elif '-' == key[0]: # remove "-" from shortcut
                     key = shortcuts[script][key[1:]]
                 else:
                     return InputError('Only parameters preceeded by "-" or "--" are allowed. Please use "python generate_data.py --help" for more info!')
 
-                val_type = params_types[key]
-                if key != 'labels':
+                val_type = params_types[key]    # the proper type for the argument value
+                if key != 'labels': # if the argument isn't setting the labels
                     val_cast = val_type(val) if val_type != tuple else val_type([float(v) for v in val.split(',')])
                 else:
                     val_cast = val_type([v for v in val.split(',')])
-                params[script][key] = val_cast
+                params[script][key] = val_cast  # set the casted value to the parameters dictionary
 
             except KeyError:
                 return KeyError(f'Passed parameter not recognized: "{key}"!')
 
             except ValueError as error:
                 return ValueError(f'Invalid value passed for the parameter "{key}"\n{error}!')
+
+
+# a custom error type if the user passed a bad argument
+class InputError(Exception):
+    pass
