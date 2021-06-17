@@ -5,7 +5,7 @@
 
     the hyperparameters controlling the generation process can be set using the cli arguments while running the script.
     For example: 
-            python generate_data.py --src-intensity-range=0.3,1.2 -f=png
+            python generate_data.py --src-intensity-range=0.3,1.2
 
     To view all the possible argumnets and their description use:
             python generate_data.py --help
