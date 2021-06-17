@@ -21,8 +21,8 @@ flags = {
 # "model-figures" key is for the script "model_and_figures.py"
 params = {
     'data': {
-            'grid-size': 256,
-            'generated-number': 100,
+            'grid-size': 64,
+            'generated-number': 50,
 
             'lens-redshift-range': (0.5, 1.5),
             'lens-center-var': 0.25,

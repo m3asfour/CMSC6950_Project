@@ -11,14 +11,14 @@
             python generate_data.py --help
 """
 
-import os
+import logging
 # disable logging to the terminal by the autolens package
 logging.disable(logging.CRITICAL)
 
 # import required modules
+import os
 import pickle
 import sys
-import logging
 
 import pandas as pd
 import params_and_cli as params
