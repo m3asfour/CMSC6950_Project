@@ -25,7 +25,7 @@ clean:
 .PHONY: clean
 
 
-# remove temporary files, the report, the model, and the figures
+# remove temporary files, the report (not the copy), the model, and the figures
 reset: clean
-	rm -rf *.h5 *.pdf figures dataset
+	rm -rf *.h5 report.pdf figures dataset
 .PHONY: reset

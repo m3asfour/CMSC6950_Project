@@ -37,7 +37,7 @@ make
     ```
     make clean
     ```
-* or delete all generated files (returns the repo to its original state)
+* or delete all generated files (returns the repo to its original state) except for the report copy for the repo
   ```
   make reset
   ```
