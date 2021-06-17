@@ -212,8 +212,9 @@ def generate_sample_figures(x):
 
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
-    # iterate over the first few images (specified by the parameter)
-    for iter_idx, tracer_img in enumerate(tqdm(x[:params.params['model-figures']['subplots-number']],
+    # iterate over the first few images (specified by the parameter) - at least four for the report
+    images_num = np.maximum(params.params['model-figures']['subplots-number'], 4)
+    for iter_idx, tracer_img in enumerate(tqdm(x[:images_num],
                                                desc='Generating samples figures in ./figures')):
         # plot the image and save it
         ax.imshow(tracer_img, cmap=params.params['model-figures']['cmap'])
@@ -248,19 +249,19 @@ def generate_loss_figure(model, history):
             'mae', 'Mean Absolute Error').replace('mse', 'Mean Squared Error')
 
         # plot with the proper line style and color depending on loss type and set type
-        ax.plot(train_epochs, values, label=label, linestyle=':' if 'Abs' in label else '-', linewidth=2,
-                c=colors[int('Val' in label)], marker='o', markersize=6)
+        ax.plot(train_epochs, values, label=label, linestyle=':' if 'Abs' in label else '-', linewidth=3,
+                c=colors[int('Val' in label)], marker='o', markersize=8)
     
     # format the axes 
     ax.grid('on')
     ax.set_xticks(train_epochs)
-    ax.set_xticklabels(ax.get_xticks(), size=14, rotation=45)
-    ax.set_yticklabels(np.round(ax.get_yticks(), 1), size=14)
-    ax.set_xlabel('Training Epochs', size=14)
-    ax.set_ylabel('Loss Value', size=14)
+    ax.set_xticklabels(ax.get_xticks(), size=20, rotation=90)
+    ax.set_yticklabels(np.round(ax.get_yticks(), 1), size=20)
+    ax.set_xlabel('Training Epochs', size=20)
+    ax.set_ylabel('Loss Value', size=20)
 
-    ax.legend(loc='upper right', ncol=2, fancybox=True, fontsize=14)
-    ax.set_title('Losses vs Epochs', size=24)
+    ax.legend(loc='upper right', ncol=2, fancybox=True, fontsize=20)
+    ax.set_title('Losses vs Epochs', size=36)
     plt.tight_layout()
 
     fig.savefig(

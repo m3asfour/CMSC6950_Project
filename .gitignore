@@ -9,4 +9,10 @@ __pycache__
 dataset/*
 figures/*
 *.h5
+latex/*.aux
+latex/*.bbl
+latex/*.blg
+latex/*.log
+latex/*.pdf
+latex/*.gz
 
