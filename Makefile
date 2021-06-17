@@ -18,16 +18,6 @@ dataset/param_df.csv:
 	python generate_data.py --force
 
 
-# clone all the required modules to ./packages
-packages:
-	mkdir packages
-	cd packages && git clone https://github.com/rhayes777/PyAutoFit
-	cd packages && git clone https://github.com/Jammy2211/PyAutoArray
-	cd packages && git clone https://github.com/Jammy2211/PyAutoGalaxy
-	cd packages && git clone https://github.com/Jammy2211/PyAutoLens
-.PHONY: packages
-
-
 # remove temporary files
 clean:
 	rm -rf dataset/* *.log *.swp
@@ -36,12 +26,6 @@ clean:
 
 
 # remove temporary files, the report, the model, and the figures
-clean_all: clean
-	rm -rf *.h5 *.pdf figures/*
-.PHONY: clean_all
-
-
-# remove the packages
-clean_packages:
-	rm -rf packages
-.PHONY: clean_packages
+reset: clean
+	rm -rf *.h5 *.pdf figures dataset $(wildcard __pycache__)
+.PHONY: reset

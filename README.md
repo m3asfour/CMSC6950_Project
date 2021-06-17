@@ -11,56 +11,24 @@ This porject uses PyAutoLens to generate synthesized images of the gravitational
 ##### ![](https://sites.astro.caltech.edu/~george/qsolens/lensillustration.jpg) Image credits: https://sites.astro.caltech.edu/~george/qsolens/
 ---
 
-## 1. Create Conda Environment and Install Required Packages
-```
-conda create -n pyautolens python==3.9
-conda activate pyautolens
-pip install autoconf numpy pandas matplotlib tensorflow keras tqdm
-```
-<br>
-
-## 2. Build PyAutoLens from source
+## 1. Installing with Conda
 ### First make sure you are in the project's directory.
-### 2.1 Clone the PyAutoLens repo and its supporting modules
-#### 2.1.1 You can either clone them manually using the following commands
+### 1.1 Create the conda environment with required dependencies
 ```
-mkdir packages
-cd packages
-git clone https://github.com/rhayes777/PyAutoFit
-git clone https://github.com/Jammy2211/PyAutoArray
-git clone https://github.com/Jammy2211/PyAutoGalaxy
-git clone https://github.com/Jammy2211/PyAutoLens
-cd ..
-```
-#### 2.1.2 or using the Makefile command, and it will take create directory and clone the repos
-```
-make packages
-```
-* #### You can also delete the packages using
-    ```
-    make clean_packages
-    ```
-<br>
-
-### 2.2 Install dependencies
-```
-conda activate pyautolens
-pip install -r packages/PyAutoFit/requirements.txt
-pip install -r packages/PyAutoArray/requirements.txt
-pip install -r packages/PyAutoGalaxy/requirements.txt
-pip install -r packages/PyAutoLens/requirements.txt
+conda create -n autolens astropy numba numpy scikit-image scikit-learn scipy
 ```
 <br>
 
-### 2.3 Add repos to the environment path
+### 1.2 Install other dependencies
 ```
-conda-develop packages/PyAutoFit
-conda-develop packages/PyAutoArray
-conda-develop packages/PyAutoGalaxy
-conda-develop packages/PyAutoLens
+conda activate autolens
+pip install --upgrade pip
+pip install autolens --ignore-installed numba llvmlite
 ```
+<br>
 
-## 3. Build from Makefile
+
+## 2. Build from Makefile
 ```
 make
 ```
@@ -68,9 +36,9 @@ make
     ```
     make clean
     ```
-* or delete all generated files (temporary, figures, report) except for the packages using
+* or delete all generated files (temporary, figures, report)
   ```
-  make clean_all
+  make reset
   ```
 
-## The report is now generated in the project's directory with a CNN model as a .h5 file
+### The report is now generated in the project's directory with a CNN model as a .h5 file
