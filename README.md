@@ -24,6 +24,7 @@ conda create -n autolens astropy numba numpy scikit-image scikit-learn scipy
 conda activate autolens
 pip install --upgrade pip
 pip install autolens --ignore-installed numba llvmlite
+pip install pandas matplotlib tensorflow keras tqdm
 ```
 <br>
 
